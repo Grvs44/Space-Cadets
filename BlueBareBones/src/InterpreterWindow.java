@@ -30,12 +30,11 @@ class InterpreterWindow extends JFrame implements ActionListener {
     JButton source = (JButton) event.getSource();
     if (source == runButton) run();
     else if (source == stepButton) step();
-    System.out.println(source.getParent().getParent().getParent().getParent().getParent() == this);
   }
 
   private void run() {
     String[] code = codeBox.getText().split(";");
-    for(String line : code) System.out.println(line);
+    for(String line : code) System.out.println(AST.match(line.split(" ")));
   }
 
   private void step() {
