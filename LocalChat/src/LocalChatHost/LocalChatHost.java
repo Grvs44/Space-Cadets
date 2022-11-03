@@ -4,9 +4,14 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.security.KeyException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class LocalChatHost {
+  public final HashMap<Integer, ChatRoom> chatRooms = new HashMap<>();
+  public final HashMap<String, ChatUser> users = new HashMap<>();
+  private Integer nextChatRoomId = Integer.valueOf(0);
+
   public static void main(String args[]) {
     int port = 8000;
     boolean output = false;
@@ -31,10 +36,15 @@ public class LocalChatHost {
       while (true) {
         Socket socket = serverSocket.accept();
         System.out.println("Incoming request");
-        new LocalChatHostThread(socket).start();
+        new LocalChatHostThread(socket, this).start();
       }
     } catch (IOException e) {
       System.out.println(e);
     }
+  }
+
+  public void addChatRoom(ChatRoom room) {
+    chatRooms.put(nextChatRoomId, room);
+    nextChatRoomId++;
   }
 }

@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class LocalChatJoin extends JFrame implements ActionListener {
   private final JPanel panel = new JPanel();
@@ -16,6 +15,8 @@ public class LocalChatJoin extends JFrame implements ActionListener {
   private final JScrollPane messageBoxScroll = new JScrollPane(messageBox);
   private final JScrollPane sendBoxScroll = new JScrollPane(sendBox);
   private final JButton sendButton = new JButton("Send");
+  private int userID = 1;
+  private int chatID = 1;
 
   public static void main(String[] args) {
     new LocalChatJoin();
@@ -40,11 +41,11 @@ public class LocalChatJoin extends JFrame implements ActionListener {
 
   private void sendJoinRequest() {
     try (Socket socket = new Socket("localhost", 8000)) {
-      new JoinRequest("Joe", 1).serialize(socket.getOutputStream());
+      new ChatRoomJoinRequest("Joe", chatID).serialize(socket.getOutputStream());
       LocalChatResponse response = LocalChatResponse.deserialize(socket.getInputStream());
-      if (response instanceof JoinResponse) {
-        JoinResponse joinResponse = (JoinResponse) response;
-        System.out.println("Success: " + joinResponse.isSuccess() + ", userID: " + joinResponse.getUserID());
+      if (response instanceof ChatRoomJoinResponse) {
+        ChatRoomJoinResponse chatRoomJoinResponse = (ChatRoomJoinResponse) response;
+        System.out.println("Success: " + chatRoomJoinResponse.isSuccess() + ", userID: " + chatRoomJoinResponse.getUserID());
       }
     } catch (ClassNotFoundException | IOException e) {
       System.out.println("Error: " + e.getMessage());
@@ -53,7 +54,7 @@ public class LocalChatJoin extends JFrame implements ActionListener {
 
   private void sendMessage() {
     try (Socket socket = new Socket("localhost", 8000)) {
-      new MessageRequest(1, this.sendBox.getText()).serialize(socket.getOutputStream());
+      new MessageRequest(userID, chatID, this.sendBox.getText()).serialize(socket.getOutputStream());
       LocalChatResponse response = LocalChatResponse.deserialize(socket.getInputStream());
       if (response instanceof MessageResponse) {
         this.sendBox.setText("");

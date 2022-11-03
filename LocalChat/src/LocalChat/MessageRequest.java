@@ -1,19 +1,13 @@
 package LocalChat;
 
 public class MessageRequest extends LocalChatRequest {
-  private final int userID;
-  private final String message;
+  public final int userID;
+  public final int chatID;
+  public final String message;
 
-  public MessageRequest(int userID, String message) {
+  public MessageRequest(int userID, int chatID, String message) {
     this.userID = userID;
+    this.chatID = chatID;
     this.message = message;
-  }
-
-  public int getUserID() {
-    return userID;
-  }
-
-  public String getMessage() {
-    return message;
   }
 }
