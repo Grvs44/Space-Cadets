@@ -1,12 +1,12 @@
 package LocalChatHost;
 
-import LocalChat.LocalChatRequest;
+import LocalChat.ServerShuttingDownRequest;
 
 import java.util.Iterator;
 
 public class AlertShutdownThread extends AlertChatUserThread {
-  public AlertShutdownThread(Iterator<ChatUser> users, ChatUser noAlertUser, LocalChatRequest alertRequest) {
-    super(users, noAlertUser, alertRequest);
+  public AlertShutdownThread(Iterator<ChatUser> users, ChatUser noAlertUser) {
+    super(users, noAlertUser, new ServerShuttingDownRequest());
   }
 
   @Override
