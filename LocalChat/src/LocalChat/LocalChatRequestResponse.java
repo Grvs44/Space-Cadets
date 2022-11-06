@@ -9,16 +9,11 @@ public abstract class LocalChatRequestResponse implements java.io.Serializable {
     OutputStream outputStream = socket.getOutputStream();
     ObjectOutputStream objectStream = new ObjectOutputStream(outputStream);
     objectStream.writeObject(this);
-    objectStream.close();
-    outputStream.close();
   }
 
   public static LocalChatRequestResponse deserialize(Socket socket) throws IOException, ClassNotFoundException {
     InputStream inputStream = socket.getInputStream();
     ObjectInputStream objectStream = new ObjectInputStream(inputStream);
-    LocalChatRequestResponse request = (LocalChatRequestResponse) objectStream.readObject();
-    objectStream.close();
-    inputStream.close();
-    return request;
+    return (LocalChatRequestResponse) objectStream.readObject();
   }
 }
