@@ -19,7 +19,7 @@ public class LocalChatHostThread extends Thread {
     try {
       String clientIP = socket.getInetAddress().getHostAddress();
       ChatUser user = host.users.getOrDefault(clientIP, null);
-      LocalChatRequest request = LocalChatRequest.deserialize(socket.getInputStream());
+      LocalChatRequest request = LocalChatRequest.deserialize(socket);
       LocalChatResponse response;
       if (request instanceof MessageRequest messageRequest){
         ChatRoom chatRoom = host.chatRooms.getOrDefault(messageRequest.chatID, null);
@@ -79,7 +79,7 @@ public class LocalChatHostThread extends Thread {
         System.out.println("Unknown request");
         response = new UnknownResponse();
       }
-      response.serialize(socket.getOutputStream());
+      response.serialize(socket);
       socket.close();
     } catch (IOException | ClassNotFoundException e) {
       //System.out.println("Error: " + e.getMessage());

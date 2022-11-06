@@ -52,7 +52,7 @@ public class LocalChatJoin extends JFrame implements ActionListener {
       try {
         sendJoinRequest();
       } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "LocalChatJoin", "The chat ID must be an integer", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, "The chat ID must be an integer", "LocalChatJoin", JOptionPane.ERROR_MESSAGE);
       }
     } else if (event.getSource() == createButton) {
       sendCreateRequest();
@@ -62,8 +62,8 @@ public class LocalChatJoin extends JFrame implements ActionListener {
   private void sendJoinRequest() {
     int chatID = Integer.parseInt(chatIDField.getText());
     try (Socket socket = new Socket(hostIP, hostPort)) {
-      new ChatRoomJoinRequest(chatID).serialize(socket.getOutputStream());
-      LocalChatResponse response = LocalChatResponse.deserialize(socket.getInputStream());
+      new ChatRoomJoinRequest(chatID).serialize(socket);
+      LocalChatResponse response = LocalChatResponse.deserialize(socket);
       if (response instanceof ChatRoomJoinResponse joinResponse) {
         System.out.println("Success");
         new ChatWindow(this, chatID, joinResponse.name);
@@ -77,8 +77,8 @@ public class LocalChatJoin extends JFrame implements ActionListener {
     String name = chatNameField.getText();
     if (name.isBlank()) return;
     try (Socket socket = new Socket(hostIP, hostPort)) {
-      new ChatRoomCreateRequest(name).serialize(socket.getOutputStream());
-      LocalChatResponse response = LocalChatResponse.deserialize(socket.getInputStream());
+      new ChatRoomCreateRequest(name).serialize(socket);
+      LocalChatResponse response = LocalChatResponse.deserialize(socket);
       if (response instanceof ChatRoomCreateResponse createResponse) {
         System.out.println("Success");
         new ChatWindow(this, createResponse.chatID, name);

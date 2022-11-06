@@ -1,23 +1,20 @@
 package LocalChat;
 
 import java.io.*;
+import java.net.Socket;
 
 public abstract class LocalChatRequestResponse implements java.io.Serializable {
-  public byte[] serialize() throws IOException {
-    ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-    ObjectOutputStream objectStream = new ObjectOutputStream(byteStream);
+
+  public void serialize(Socket socket) throws IOException {
+    OutputStream outputStream = socket.getOutputStream();
+    ObjectOutputStream objectStream = new ObjectOutputStream(outputStream);
     objectStream.writeObject(this);
-    byte[] buffer = byteStream.toByteArray();
     objectStream.close();
-    byteStream.close();
-    return buffer;
+    outputStream.close();
   }
 
-  public void serialize(OutputStream outputStream) throws IOException {
-    new ObjectOutputStream(outputStream).writeObject(this);
-  }
-
-  public static LocalChatRequestResponse deserialize(InputStream inputStream) throws IOException, ClassNotFoundException {
+  public static LocalChatRequestResponse deserialize(Socket socket) throws IOException, ClassNotFoundException {
+    InputStream inputStream = socket.getInputStream();
     ObjectInputStream objectStream = new ObjectInputStream(inputStream);
     LocalChatRequestResponse request = (LocalChatRequestResponse) objectStream.readObject();
     objectStream.close();

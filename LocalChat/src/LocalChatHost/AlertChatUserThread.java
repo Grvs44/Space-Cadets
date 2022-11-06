@@ -24,7 +24,7 @@ public class AlertChatUserThread extends Thread {
       ChatUser user = it.next();
       if (user == noAlertUser) continue;
       try (Socket socket = new Socket(user.ipAddress, user.port)) {
-        alertRequest.serialize(socket.getOutputStream());
+        alertRequest.serialize(socket);
       } catch (IOException e) {
         System.out.println("Error: " + e.getMessage());
       }

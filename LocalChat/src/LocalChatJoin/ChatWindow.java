@@ -34,8 +34,8 @@ public class ChatWindow extends JFrame implements ActionListener {
 
   public void actionPerformed(ActionEvent event) {
     try (Socket socket = new Socket(localChatJoin.hostIP, localChatJoin.hostPort)) {
-      new MessageRequest(chatID, this.sendBox.getText()).serialize(socket.getOutputStream());
-      LocalChatResponse response = LocalChatResponse.deserialize(socket.getInputStream());
+      new MessageRequest(chatID, this.sendBox.getText()).serialize(socket);
+      LocalChatResponse response = LocalChatResponse.deserialize(socket);
       if (response instanceof MessageResponse) {
         this.sendBox.setText("");
         System.out.println("Message received");
