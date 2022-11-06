@@ -16,7 +16,7 @@ public class LocalChatJoinListener extends LocalChatWindowListener {
     try (Socket socket = new Socket(localChatJoin.hostIP, localChatJoin.hostPort)) {
       new UserLeaveRequest().serialize(socket);
       LocalChatResponse response = LocalChatResponse.deserialize(socket);
-      if (response instanceof ChatRoomLeaveResponse) {
+      if (response instanceof UserLeaveResponse) {
         System.out.println("Left server");
       } else {
         JOptionPane.showMessageDialog(localChatJoin, "Issue with leaving server", "LocalChatJoin", JOptionPane.ERROR_MESSAGE);

@@ -9,12 +9,8 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class ChatWindow extends JFrame implements ActionListener {
-  private final JPanel panel = new JPanel();
-  private final JTextArea messageBox = new JTextArea(50, 40);
+  private final JTextArea messageBox = new JTextArea(20, 40);
   private final JTextArea sendBox = new JTextArea(5, 40);
-  private final JScrollPane messageBoxScroll = new JScrollPane(messageBox);
-  private final JScrollPane sendBoxScroll = new JScrollPane(sendBox);
-  private final JButton sendButton = new JButton("Send");
   private final LocalChatJoin localChatJoin;
   public final int chatID;
 
@@ -25,9 +21,13 @@ public class ChatWindow extends JFrame implements ActionListener {
     setSize(500, 500);
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     this.addWindowListener(new ChatWindowListener(localChatJoin, chatID));
+    JButton sendButton = new JButton("Send");
     sendButton.addActionListener(this);
     messageBox.setEditable(false);
+    JScrollPane messageBoxScroll = new JScrollPane(messageBox);
+    JPanel panel = new JPanel();
     panel.add(messageBoxScroll);
+    JScrollPane sendBoxScroll = new JScrollPane(sendBox);
     panel.add(sendBoxScroll);
     panel.add(sendButton);
     add(panel);

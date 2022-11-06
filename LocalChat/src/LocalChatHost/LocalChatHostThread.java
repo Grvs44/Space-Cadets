@@ -31,7 +31,6 @@ public class LocalChatHostThread extends Thread {
           response = new ChatRoom404Response();
           System.err.println("Send message: chat room not found");
         } else if (chatRoom.users.contains(user)) {
-          System.out.println("\n{" + "} [" + user.userName + "] " + messageRequest.message);
           response = new MessageResponse();
           new AlertChatUserThread(chatRoom.users.iterator(), user, new IncomingMessageRequest(user.userName, messageRequest.message));
           System.out.println("Send message: " + user.userName + " sent " + messageRequest.message + " to " + chatRoom.name);
@@ -134,7 +133,6 @@ public class LocalChatHostThread extends Thread {
       response.serialize(socket);
       socket.close();
     } catch (IOException | ClassNotFoundException e) {
-      //System.out.println("Error: " + e.getMessage());
       throw new RuntimeException(e);
     }
   }
