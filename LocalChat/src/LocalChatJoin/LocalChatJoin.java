@@ -10,6 +10,8 @@ import java.net.Socket;
 
 public class LocalChatJoin extends JFrame implements ActionListener {
   private final JPanel panel = new JPanel();
+  private final JTextField userNameField = new JTextField(20);
+  private final JButton userButton = new JButton("Create user");
   private final JTextField chatIDField = new JTextField(20);
   private final JButton joinButton = new JButton("Join");
   private final JTextField chatNameField = new JTextField(20);
@@ -37,8 +39,12 @@ public class LocalChatJoin extends JFrame implements ActionListener {
     this.userName = userName;
     setSize(500, 500);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
+    this.addWindowListener(new LocalChatJoinListener(this));
+    userButton.addActionListener(this);
     joinButton.addActionListener(this);
     createButton.addActionListener(this);
+    panel.add(userNameField);
+    panel.add(userButton);
     panel.add(chatIDField);
     panel.add(joinButton);
     panel.add(chatNameField);
@@ -48,14 +54,17 @@ public class LocalChatJoin extends JFrame implements ActionListener {
   }
 
   public void actionPerformed(ActionEvent event) {
-    if (event.getSource() == joinButton) {
+    Object source = event.getSource();
+    if (source == joinButton) {
       try {
         sendJoinRequest();
       } catch (NumberFormatException e) {
         JOptionPane.showMessageDialog(this, "The chat ID must be an integer", "LocalChatJoin", JOptionPane.ERROR_MESSAGE);
       }
-    } else if (event.getSource() == createButton) {
+    } else if (source == createButton) {
       sendCreateRequest();
+    } else if (source == userButton) {
+      sendUserJoinRequest();
     }
   }
 
@@ -65,8 +74,9 @@ public class LocalChatJoin extends JFrame implements ActionListener {
       new ChatRoomJoinRequest(chatID).serialize(socket);
       LocalChatResponse response = LocalChatResponse.deserialize(socket);
       if (response instanceof ChatRoomJoinResponse joinResponse) {
-        System.out.println("Success");
         new ChatWindow(this, chatID, joinResponse.name);
+      } else {
+        JOptionPane.showMessageDialog(this, "Couldn't join chat room", "LocalChatJoin", JOptionPane.ERROR_MESSAGE);
       }
     } catch (ClassNotFoundException | IOException e) {
       throw new RuntimeException(e);
@@ -80,8 +90,29 @@ public class LocalChatJoin extends JFrame implements ActionListener {
       new ChatRoomCreateRequest(name).serialize(socket);
       LocalChatResponse response = LocalChatResponse.deserialize(socket);
       if (response instanceof ChatRoomCreateResponse createResponse) {
-        System.out.println("Success");
         new ChatWindow(this, createResponse.chatID, name);
+      } else {
+        JOptionPane.showMessageDialog(this, "Couldn't create chat room", "LocalChatJoin", JOptionPane.ERROR_MESSAGE);
+      }
+    } catch (ClassNotFoundException | IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private void sendUserJoinRequest() {
+    String name = userNameField.getText();
+    if (name.isBlank()) return;
+    try (Socket socket = new Socket(hostIP, hostPort)) {
+      new UserJoinRequest(hostPort, name).serialize(socket);
+      LocalChatResponse response = LocalChatResponse.deserialize(socket);
+      if (response instanceof UserJoinResponse) {
+        userNameField.setEnabled(false);
+        userButton.setEnabled(false);
+        JOptionPane.showMessageDialog(this, "Successfully registered user", "LocalChatJoin", JOptionPane.INFORMATION_MESSAGE);
+      } else if (response instanceof UserExistsResponse) {
+        JOptionPane.showMessageDialog(this, "A user already exists at this location", "LocalChatJoin", JOptionPane.ERROR_MESSAGE);
+      } else {
+        JOptionPane.showMessageDialog(this, "Unknown error", "LocalChatJoin", JOptionPane.ERROR_MESSAGE);
       }
     } catch (ClassNotFoundException | IOException e) {
       throw new RuntimeException(e);

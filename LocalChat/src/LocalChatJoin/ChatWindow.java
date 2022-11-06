@@ -10,7 +10,7 @@ import java.net.Socket;
 
 public class ChatWindow extends JFrame implements ActionListener {
   private final JPanel panel = new JPanel();
-  private final JTextArea messageBox = new JTextArea(5, 40);
+  private final JTextArea messageBox = new JTextArea(50, 40);
   private final JTextArea sendBox = new JTextArea(5, 40);
   private final JScrollPane messageBoxScroll = new JScrollPane(messageBox);
   private final JScrollPane sendBoxScroll = new JScrollPane(sendBox);
@@ -23,8 +23,10 @@ public class ChatWindow extends JFrame implements ActionListener {
     this.localChatJoin = localChatJoin;
     this.chatID = chatID;
     setSize(500, 500);
-    setDefaultCloseOperation(EXIT_ON_CLOSE);
+    setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    this.addWindowListener(new ChatWindowListener(localChatJoin, chatID));
     sendButton.addActionListener(this);
+    messageBox.setEditable(false);
     panel.add(messageBoxScroll);
     panel.add(sendBoxScroll);
     panel.add(sendButton);
@@ -34,13 +36,14 @@ public class ChatWindow extends JFrame implements ActionListener {
 
   public void actionPerformed(ActionEvent event) {
     try (Socket socket = new Socket(localChatJoin.hostIP, localChatJoin.hostPort)) {
-      new MessageRequest(chatID, this.sendBox.getText()).serialize(socket);
+      String message = sendBox.getText();
+      new MessageRequest(chatID, message).serialize(socket);
       LocalChatResponse response = LocalChatResponse.deserialize(socket);
       if (response instanceof MessageResponse) {
-        this.sendBox.setText("");
-        System.out.println("Message received");
+        sendBox.setText("");
+        messageBox.setText(messageBox.getText() + "\n\n[" + localChatJoin.userName + "]\n" + message);
       } else {
-        System.out.println("Issue sending message");
+        JOptionPane.showMessageDialog(this, "Issue sending message", "LocalChatJoin", JOptionPane.ERROR_MESSAGE);
       }
     } catch (ClassNotFoundException | IOException e) {
       throw new RuntimeException(e);
