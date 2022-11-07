@@ -18,25 +18,27 @@ public class LocalChatJoin extends JFrame implements ActionListener {
   private final JButton createButton = new JButton("Create");
   public final String hostIP;
   public final int hostPort;
+  public final int clientPort;
   public String userName;
   public HashMap<Integer, ChatWindow> chatWindows = new HashMap<>();
 
   public static void main(String[] args) {
-    if (args.length == 2) {
+    if (args.length == 3) {
       try {
-        new LocalChatJoin(args[0], Integer.parseInt(args[1]));
+        new LocalChatJoin(args[0], Integer.parseInt(args[1]), Integer.parseInt(args[2]));
       } catch (NumberFormatException e) {
-        System.err.println("Port number (second argument) must be an integer");
+        System.err.println("Port numbers (second and third arguments) must be integers");
       }
     } else {
-      System.err.println("Must provide host IP address, and host port, and username as arguments in format host-IP host-port username");
+      System.err.println("Must provide host IP address, and host port, and username as arguments in format host-IP host-port client-port");
     }
   }
 
-  public LocalChatJoin(String hostIP, int hostPort) {
+  public LocalChatJoin(String hostIP, int hostPort, int clientPort) {
     super("LocalChatJoin");
     this.hostIP = hostIP;
     this.hostPort = hostPort;
+    this.clientPort = clientPort;
     setSize(500, 500);
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     this.addWindowListener(new LocalChatJoinListener(this));
@@ -52,6 +54,7 @@ public class LocalChatJoin extends JFrame implements ActionListener {
     panel.add(createButton);
     add(panel);
     setVisible(true);
+    new MessageReceiver(this).start();
   }
 
   public void actionPerformed(ActionEvent event) {
@@ -104,7 +107,7 @@ public class LocalChatJoin extends JFrame implements ActionListener {
     String name = userNameField.getText();
     if (name.isBlank()) return;
     try (Socket socket = new Socket(hostIP, hostPort)) {
-      new UserJoinRequest(hostPort, name).serialize(socket);
+      new UserJoinRequest(clientPort, name).serialize(socket);
       LocalChatResponse response = LocalChatResponse.deserialize(socket);
       if (response instanceof UserJoinResponse) {
         userNameField.setEnabled(false);

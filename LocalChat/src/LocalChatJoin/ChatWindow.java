@@ -41,12 +41,16 @@ public class ChatWindow extends JFrame implements ActionListener {
       LocalChatResponse response = LocalChatResponse.deserialize(socket);
       if (response instanceof MessageResponse) {
         sendBox.setText("");
-        messageBox.setText(messageBox.getText() + "\n\n[" + localChatJoin.userName + "]\n" + message);
+        addMessage(localChatJoin.userName, message);
       } else {
         JOptionPane.showMessageDialog(this, "Issue sending message", "LocalChatJoin", JOptionPane.ERROR_MESSAGE);
       }
     } catch (ClassNotFoundException | IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public void addMessage(String userName, String message) {
+    messageBox.setText(messageBox.getText() + "\n\n[" + userName + "]\n" + message);
   }
 }

@@ -19,6 +19,7 @@ public class LocalChatHostThread extends Thread {
   public void run() {
     try {
       String clientIP = socket.getInetAddress().getHostAddress();
+      System.out.println("clientIP: " + clientIP);
       ChatUser user = host.users.getOrDefault(clientIP, null);
       LocalChatRequest request = LocalChatRequest.deserialize(socket);
       LocalChatResponse response;
@@ -32,7 +33,7 @@ public class LocalChatHostThread extends Thread {
           System.err.println("Send message: chat room not found");
         } else if (chatRoom.users.contains(user)) {
           response = new MessageResponse();
-          new AlertChatUserThread(chatRoom.users.iterator(), user, new IncomingMessageRequest(user.userName, messageRequest.message));
+          new AlertChatUserThread(chatRoom.users.iterator(), user, new IncomingMessageRequest(user.userName, messageRequest.message, messageRequest.chatID));
           System.out.println("Send message: " + user.userName + " sent " + messageRequest.message + " to " + chatRoom.name);
         } else {
           response = new UserNotInChatResponse();
