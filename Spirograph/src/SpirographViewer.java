@@ -27,8 +27,6 @@ public class SpirographViewer extends JFrame {
     //int O = 100;//10
     //int r = 1;//1
     int t = 0;//variable
-    int belowZero = 0;
-    int aboveZero = 0;
     GeneralPath polyline = new GeneralPath(GeneralPath.WIND_EVEN_ODD, length);
     polyline.moveTo((R-r)*Math.cos(t) + O*Math.cos(((float)(R-r)/r)*t), (R-r)*Math.sin(t) - O*Math.sin(((float)(R-r)/r)*t));
     for (t = 1; t < length; t++) {
@@ -38,7 +36,5 @@ public class SpirographViewer extends JFrame {
       );
     }
     graphics.draw(polyline);
-    System.out.println(aboveZero);
-    System.out.println(belowZero);
   }
 }
